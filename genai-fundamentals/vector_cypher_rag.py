@@ -26,7 +26,8 @@ MATCH (node)<-[r:RATED]-()
 RETURN 
   node.title AS title, node.plot AS plot, score AS similarityScore, 
   collect { MATCH (node)-[:IN_GENRE]->(g) RETURN g.name } as genres, 
-  collect { MATCH (node)<-[:ACTED_IN]->(a) RETURN a.name } as actors, 
+  collect { MATCH (node)<-[:ACTED_IN]->(a) RETURN a.name } as actors,
+  collect { MATCH (node)<-[:DIRECTED]-(director) RETURN director.name } as directors,
   avg(r.rating) as userRating
 ORDER BY userRating DESC
 """
@@ -49,7 +50,8 @@ llm = OpenAILLM(model_name="gpt-4o")
 rag = GraphRAG(retriever=retriever, llm=llm)
 
 # Search
-query_text = "Find the highest rated action movie about travelling to other planets"
+# query_text = "Find the highest rated action movie about travelling to other planets"
+query_text = "Who has directed movies about weddings?"
 
 response = rag.search(
     query_text=query_text, 
