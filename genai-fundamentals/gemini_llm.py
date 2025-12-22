@@ -27,7 +27,7 @@ class GeminiLLM(LLMInterface):
 
     def __init__(
         self,
-        model_name: str = "gemini-1.5-flash",
+        model_name: str = "gemini-3-flash-preview",
         model_params: Optional[dict[str, Any]] = None,
         api_key: Optional[str] = None,
         system_instruction: Optional[str] = None,
