@@ -20,10 +20,27 @@ driver = GraphDatabase.driver(
 embedder = OpenAIEmbeddings(model="text-embedding-ada-002")
 
 # Define retrieval query
-retrieval_query =
+# Define retrieval query
+retrieval_query = """
+MATCH (node)<-[r:RATED]-()
+RETURN 
+  node.title AS title, node.plot AS plot, score AS similarityScore, 
+  collect { MATCH (node)-[:IN_GENRE]->(g) RETURN g.name } as genres, 
+  collect { MATCH (node)<-[:ACTED_IN]->(a) RETURN a.name } as actors, 
+  avg(r.rating) as userRating
+ORDER BY userRating DESC
+"""
 
 # Create retriever
-retriever = 
+from neo4j_graphrag.retrievers import VectorCypherRetriever
+
+# Create retriever
+retriever = VectorCypherRetriever(
+    driver,
+    index_name="moviePlots",
+    embedder=embedder,
+    retrieval_query=retrieval_query,
+) 
 
 #  Create the LLM
 llm = OpenAILLM(model_name="gpt-4o")
